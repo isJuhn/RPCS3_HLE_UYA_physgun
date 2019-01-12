@@ -19,10 +19,23 @@ struct physgun_mod_data_t
 	Vec4 moby_offset;
 } physgun_data{};
 
+struct
+{
+	u32 func_spawn_ray;
+	u32 func_coll_line;
+	u32 u32_cant_shoot;
+	u32 ptr_controller_data;
+	u32 ptr_looking_pos;
+	u32 ptr_ratchet_moby;
+	u32 ptr_collision_pos;
+	u32 ptr_collision_moby;
+	u32 return_address;
+} offsets{};
+
 extern "C" void __declspec(dllexport) __cdecl physgun_tick(ppu_thread& ppu)
 {
-	vm::ptr<spawn_ray_func> spawn_ray{ vm::addr_t{ 0xBE6FF0 } };
-	vm::ptr<CollLine> coll_line{ vm::addr_t{ 0xBD5790 } };
+	vm::ptr<spawn_ray_func> spawn_ray{ offsets.func_spawn_ray };
+	vm::ptr<CollLine> coll_line{ offsets.func_coll_line };
 	vm::ptr<Vec4> vec_0{ api::stack_alloc(ppu, sizeof(Vec4), alignof(Vec4)) };
 
 	vm::ptr<Vec4> start_pos{static_cast<u32>(ppu.gpr[28])};
@@ -32,18 +45,18 @@ extern "C" void __declspec(dllexport) __cdecl physgun_tick(ppu_thread& ppu)
 		--physgun_data.physics;
 	}
 
-	if (!api::read32(0xEE9334))
+	if (!api::read32(offsets.u32_cant_shoot))
 	{
-		if (api::read32(api::read32(0xC1D574) + 0xA0) & 0x28 && !physgun_data.physics)
+		if (api::read32(api::read32(offsets.ptr_controller_data) + 0xA0) & 0x28 && !physgun_data.physics)
 		{
 			if (!physgun_data.selected_moby)
 			{
-				vm::ptr<Vec4> end_pos{ vm::addr_t{0xDA3E40} };
+				vm::ptr<Vec4> end_pos{ offsets.ptr_looking_pos };
 				*end_pos += end_pos->sub_vec4(*start_pos);
-				vm::ptr<void> ratchet_moby{ vm::addr_t{ api::read32(0xDA4DB0) } };
+				vm::ptr<void> ratchet_moby{ api::read32(offsets.ptr_ratchet_moby) };
 				coll_line(ppu, start_pos, end_pos, 0x20, ratchet_moby, 0);
-				end_pos.set(0xEE97A0);
-				vm::ptr<void> sel_moby{ vm::addr_t{ api::read32(0xEE9798) } };
+				end_pos.set(offsets.ptr_collision_pos);
+				vm::ptr<void> sel_moby{ api::read32(offsets.ptr_collision_moby) };
 				if (sel_moby)
 				{
 					physgun_data.physics = 5;
@@ -65,9 +78,9 @@ extern "C" void __declspec(dllexport) __cdecl physgun_tick(ppu_thread& ppu)
 	
 	if (physgun_data.selected_moby)
 	{
-		vm::ptr<void> ratchet_moby{ api::read32(0xDA4DB0) };
+		vm::ptr<void> ratchet_moby{ api::read32(offsets.ptr_ratchet_moby) };
 		physgun_data.ratchet_pos = *vm::ptr<Vec4>{ratchet_moby.addr() + 0x10};
-		physgun_data.ray_norm_vector = vm::ptr<Vec4>{ 0xDA3E40 }->sub_vec4(physgun_data.ratchet_pos).norm();
+		physgun_data.ray_norm_vector = vm::ptr<Vec4>{ offsets.ptr_looking_pos }->sub_vec4(physgun_data.ratchet_pos).norm();
 		*vm::ptr<Vec4>{physgun_data.selected_moby.addr() + 0x10} = physgun_data.ratchet_pos.add_vec4(physgun_data.ray_norm_vector.mul_i(physgun_data.ray_length)).add_vec4(physgun_data.moby_offset);
 		vm::ptr<Vec4> end_pos{ api::stack_alloc(ppu, sizeof(Vec4), alignof(Vec4)) };
 		*end_pos = physgun_data.ratchet_pos.add_vec4(physgun_data.ray_norm_vector.mul_i(physgun_data.ray_length));
@@ -75,10 +88,30 @@ extern "C" void __declspec(dllexport) __cdecl physgun_tick(ppu_thread& ppu)
 		api::stack_dealloc(ppu, end_pos.addr(), sizeof(Vec4));
 	}
 	api::stack_dealloc(ppu, vec_0.addr(), sizeof(Vec4));
-	RETURN_TO(0x5A1734);
+	RETURN_TO(offsets.return_address);
 }
 
 extern "C" void __declspec(dllexport) __cdecl init_dll(const std::vector<void*>& table)
 {
 	api::reg_api<api::api_table_t>::register_table(table);
+
+	if (api::hash == "PPU-2b534405de98e28b1368947c8f14d9a386bc53de")
+	{
+		// BCES01503
+		offsets.func_spawn_ray = 0xBE6FF0;
+		offsets.return_address = 0x5A1734;
+	}
+	else if (api::hash == "PPU-25754a689f16c96ab071a738b8e46e4e2e12b327")
+	{
+		// NPEA00387
+		offsets.func_spawn_ray = 0xBE6FE8;
+		offsets.return_address = 0x5A12F4;
+	}
+	offsets.func_coll_line = 0xBD5790;
+	offsets.u32_cant_shoot = 0xEE9334;
+	offsets.ptr_controller_data = 0xC1D574;
+	offsets.ptr_looking_pos = 0xDA3E40;
+	offsets.ptr_ratchet_moby = 0xDA4DB0;
+	offsets.ptr_collision_pos = 0xEE97A0;
+	offsets.ptr_collision_moby = 0xEE9798;
 }
