@@ -106,7 +106,6 @@
       <PreprocessorDefinitions>_DEBUG;RPCS3HLEUYAPHYSGUN_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalOptions>/showIncludes %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -143,7 +142,6 @@
       <PreprocessorDefinitions>NDEBUG;RPCS3HLEUYAPHYSGUN_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalOptions>/showIncludes %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,8 +152,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="RPCS3\CPUThread.h" />
-    <ClInclude Include="RPCS3\HLE_utils.h" />
     <ClInclude Include="RPCS3\PPUThread.h" />
+    <ClInclude Include="RPCS3_HLE\HLE_utils.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="vec4.h" />

@@ -201,6 +201,7 @@ namespace vm
 namespace api
 {
 	u8* g_base_addr;
+	std::string hash;
 	std::function<void(u32, be_t<u32>)> write32;
 	std::function<const be_t<u32>&(u32)> read32;
 	std::function<u32(ppu_thread&, u32, u32)> stack_alloc;
@@ -230,8 +231,8 @@ namespace api
 		static const unsigned int index = i;
 	};
 
-	std::vector<void*> api_table{ &g_base_addr, &write32, &read32, &stack_alloc, &stack_dealloc, &do_call };
-	using api_table_t = func <0, &g_base_addr, &write32, &read32, &stack_alloc, &stack_dealloc, &do_call>;
+	std::vector<void*> api_table{ &g_base_addr, &hash, &write32, &read32, &stack_alloc, &stack_dealloc, &do_call };
+	using api_table_t = func <0, &g_base_addr, &hash, &write32, &read32, &stack_alloc, &stack_dealloc, &do_call>;
 
 	template<typename table_t, bool end = table_t::end>
 	struct reg_api

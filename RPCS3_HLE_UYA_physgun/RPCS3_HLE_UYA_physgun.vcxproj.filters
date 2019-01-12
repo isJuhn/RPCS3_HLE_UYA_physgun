@@ -19,6 +19,9 @@
     <Filter Include="Source Files\RPCS3\Utilities">
       <UniqueIdentifier>{e928a2c5-f6a8-4570-8180-f754332640d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\RPCS3_HLE">
+      <UniqueIdentifier>{170b3e31-9425-41d3-8f51-bc7376e8888d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -30,14 +33,14 @@
     <ClInclude Include="RPCS3\PPUThread.h">
       <Filter>Source Files\RPCS3</Filter>
     </ClInclude>
-    <ClInclude Include="RPCS3\HLE_utils.h">
-      <Filter>Source Files\RPCS3</Filter>
-    </ClInclude>
     <ClInclude Include="RPCS3\CPUThread.h">
       <Filter>Source Files\RPCS3</Filter>
     </ClInclude>
     <ClInclude Include="vec4.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RPCS3_HLE\HLE_utils.h">
+      <Filter>Source Files\RPCS3_HLE</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
