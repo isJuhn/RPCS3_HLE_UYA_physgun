@@ -1,4 +1,7 @@
 #pragma once
+#include "../RPCS3/PPUThread.h"
+#include "../RPCS3/Utilities/geometry.h"
+#include <vector>
 
 #define RETURN_TO(x) ppu.lr = x
 #define RETURN_OFFSET(x) ppu.lr = ppu.cia + x
@@ -207,6 +210,8 @@ namespace api
 	std::function<u32(ppu_thread&, u32, u32)> stack_alloc;
 	std::function<void(ppu_thread&, u32, u32)> stack_dealloc;
 	std::function<void(ppu_thread&, u32)> do_call;
+	std::function<void(const std::string& text, int x, int y, int font_size, color4f color, const std::string& font)> draw_text;
+	std::function<void(int x, int y, int w, int h, color4f col)> draw_square;
 
 	struct func_end
 	{
@@ -231,8 +236,8 @@ namespace api
 		static const unsigned int index = i;
 	};
 
-	std::vector<void*> api_table{ &g_base_addr, &hash, &write32, &read32, &stack_alloc, &stack_dealloc, &do_call };
-	using api_table_t = func <0, &g_base_addr, &hash, &write32, &read32, &stack_alloc, &stack_dealloc, &do_call>;
+	std::vector<void*> api_table{ &g_base_addr, &hash, &write32, &read32, &stack_alloc, &stack_dealloc, &do_call, &draw_text, &draw_square };
+	using api_table_t = func <0, &g_base_addr, &hash, &write32, &read32, &stack_alloc, &stack_dealloc, &do_call, &draw_text, &draw_square>;
 
 	template<typename table_t, bool end = table_t::end>
 	struct reg_api

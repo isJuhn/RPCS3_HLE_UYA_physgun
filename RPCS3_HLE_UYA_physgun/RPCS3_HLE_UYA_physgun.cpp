@@ -3,8 +3,7 @@
 #include "RPCS3/PPUThread.h"
 #include "RPCS3_HLE/HLE_utils.h"
 #include "vec4.h"
-
-std::function<void(u32)> printint;
+#include <sstream>
 
 using spawn_ray_func = void(vm::ptr<Vec4> arg1, vm::ptr<Vec4> arg2, vm::ptr<Vec4> arg3, u32 arg4, f64 argf1);
 using CollLine = b8(vm::ptr<Vec4> vec_from, vm::ptr<Vec4> vec_to, u32, vm::ptr<void> moby, u32);
@@ -86,6 +85,11 @@ extern "C" void __declspec(dllexport) __cdecl physgun_tick(ppu_thread& ppu)
 		*end_pos = physgun_data.ratchet_pos.add_vec4(physgun_data.ray_norm_vector.mul_i(physgun_data.ray_length));
 		spawn_ray(ppu, start_pos, vec_0, end_pos, 1, 0.0f);
 		api::stack_dealloc(ppu, end_pos.addr(), sizeof(Vec4));
+
+		api::draw_square(20, 105, 150, 25, color4f(0.f, 0.f, 0.f, 0.6f));
+		std::ostringstream ostr;
+		ostr << "Moby ID: 0x" << std::hex << (api::read32(physgun_data.selected_moby.addr() + 0xAA) >> 16);
+		api::draw_text(ostr.str(), 20, 100, 16, color4f(1.f, 1.f, 1.f, 1.f), "Arial");
 	}
 	api::stack_dealloc(ppu, vec_0.addr(), sizeof(Vec4));
 	RETURN_TO(offsets.return_address);
